@@ -1,4 +1,8 @@
-' Retro Strings Module V1.0.2 - By: Anthony Diamond (Sonickidnextgen)
+Strict
+
+Public
+
+' Retro Strings Module V1.0.3 - By: Anthony Diamond (Sonickidnextgen)
 
 ' ///---------------------------------------------------------------------------------------------------------------------\\\
 '	  This library was created because I was annoyed by the lack of convenience when working with strings in Monkey.
@@ -10,7 +14,7 @@
 
 ' DISCLAIMER:
 '
-' Copyright (c) 2013 - Anthony Diamond
+' Copyright (c) 2014 - Anthony Diamond
 '
 ' Permission is hereby granted, free of charge, To any person obtaining a copy of this software And associated documentation files (the "Software"), To deal in the Software without restriction, including without limitation the rights To use, copy, modify, merge, publish, distribute, sublicense, And/Or sell copies of the Software, And To permit persons To whom the Software is furnished To do so, subject To the following conditions:
 ' The above copyright notice And this permission notice shall be included in all copies Or substantial portions of the Software.
@@ -18,7 +22,10 @@
 
 ' //////// ------------------------------------------------------------------------------------------------------------------------------------- \\\\\\\\
 
-Public
+' Imports:
+Import stringutil
+
+' Functions:
 
 ' Classic Blitz Basic string commands:
 Function Left:String(Str:String, n:Int)
@@ -129,24 +136,4 @@ End
 
 Function LongBin:String(Value:Int)
 	Return Bin(Value)
-End
-
-' Extra Functions:
-Function BoolToString:String(In:Bool)
-	If (In) Then Return "True"
-	
-	Return "False"
-End
-
-Function ShortenedFloat:String(F:Float, Precision:Int=1)
-	' Local variable(s):
-	Local S_F:= String(F)
-	Local PrecisionStr:String = Right(S_F, Len(S_F) - Instr(S_F, "."))
-	
-	If (Precision < 1) Then
-		PrecisionStr = "0"
-		Precision = 1
-	Endif
-	
-	Return Left(S_F, Instr(S_F, ".")) + Left(PrecisionStr, Precision)
 End
