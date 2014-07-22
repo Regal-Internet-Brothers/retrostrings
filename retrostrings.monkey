@@ -2,7 +2,7 @@ Strict
 
 Public
 
-' Retro Strings Module V1.0.3 - By: Anthony Diamond (Sonickidnextgen)
+' Retro Strings Module V1.0.4 - By: Anthony Diamond (Sonickidnextgen)
 
 ' ///---------------------------------------------------------------------------------------------------------------------\\\
 '	  This library was created because I was annoyed by the lack of convenience when working with strings in Monkey.
@@ -22,8 +22,27 @@ Public
 
 ' //////// ------------------------------------------------------------------------------------------------------------------------------------- \\\\\\\\
 
-' Imports:
+' Preprocessor related:
+#RETROSTRINGS_STANDARD_INTERNALS = True
+
+' Imports (Public):
 Import stringutil
+
+' Imports (Private):
+Private
+
+' Non-standard imports (Proprietary):
+#If Not RETROSTRINGS_STANDARD_INTERNALS
+	Import retrostringsextension
+#End
+
+Public
+
+' Aliases:
+
+#If Not RETROSTRINGS_STANDARD_INTERNALS
+	Alias ext = retrostringsextension
+#End
 
 ' Functions:
 
@@ -33,14 +52,17 @@ Function Left:String(Str:String, n:Int)
 End
 
 Function Right:String(Str:String, n:Int)
-	Return Str[Len(Str)-n..]
+	Return Str[-n..]
 End
 
 Function Mid:String(Str:String, Pos:Int, Size:Int=-1)
 	If (Pos > Len(Str)) Then Return ""
+	
 	Pos -= 1
 	
-	If(Size < 0) Then Return Str[Pos..]
+	If (Size < 0) Then
+		Return Str[Pos..]
+	Endif
 	
 	If (Pos < 0) Then
 		Size += Pos
@@ -68,7 +90,7 @@ End
 
 Function Upper:String(S:String)
 	Return S.ToUpper()
-End Function
+End
 
 Function LSet:String(Str:String, N:Int)
 	Return Str[..N]
@@ -103,19 +125,42 @@ Function Ascs:Int[](Str:String)
 End
 
 Function Hex:String(Value:Int)
-	' Local variable(s):
-	Local Buf:Int[8]
-	
-	For Local k:Int = 7 To 0 Step -1
-		Local n:Int = (Value & 15) + Asc("0")
+	Return HexBE(Value)
+End
+
+Function HexLE:String(Value:Int)
+	#If RETROSTRINGS_STANDARD_INTERNALS
+		' The current standard implementation of this may change in the future:
 		
-		If (n > Asc("9")) Then n += (Asc("A")-Asc("9")-1)
+		' Local variable(s):
+		Local S:= HexBE(Value)
 		
-		Buf[k]=n
-		Value Shr= 4
-	Next
-	
-	Return String.FromChars(Buf)
+		' Return the result of 'HexBE' in corrected order.
+		Return S[6..8] + S[4..6] + S[2..4] + S[0..2]
+	#Else
+		Return ext.HexLE(Value)
+	#End
+End
+
+' This command may be overhauled at a later date.
+Function HexBE:String(Value:Int)
+	#If RETROSTRINGS_STANDARD_INTERNALS
+		' Local variable(s):
+		Local Buf:Int[8]
+		
+		For Local k:Int = 7 To 0 Step -1
+			Local n:Int = (Value & 15) + Asc("0")
+			
+			If (n > Asc("9")) Then n += (Asc("A")-Asc("9")-1)
+			
+			Buf[k]=n
+			Value Shr= 4
+		Next
+		
+		Return String.FromChars(Buf)
+	#Else
+		Return ext.HexBE(Value)
+	#End
 End
 
 Function Bin:String(Value:Int)
@@ -124,6 +169,7 @@ Function Bin:String(Value:Int)
 	
 	For Local k:Int = 31 To 0 Step -1
 		Buf[k] = (Value&1) + Asc("0")
+		
 		Value Shr= 1
 	Next
 	
