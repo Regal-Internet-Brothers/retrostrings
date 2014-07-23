@@ -24,6 +24,7 @@ Public
 
 ' Preprocessor related:
 #RETROSTRINGS_STANDARD_INTERNALS = True
+#RETROSTRINGS_STRICT = True
 
 ' Imports (Public):
 Import stringutil
@@ -48,15 +49,37 @@ Public
 
 ' Classic Blitz Basic string commands:
 Function Left:String(Str:String, n:Int)
-	Return Str[..n]
+	#If RETROSTRINGS_STRICT
+		If (n < 0) Then
+			#If CONFIG = "debug"
+				Error("Illegal function call.")
+			#End
+			
+			Return ""
+		Endif
+	#End
+	
+	Return Str[..Min(n, Len(Str))]
 End
 
 Function Right:String(Str:String, n:Int)
-	Return Str[-n..]
+	#If RETROSTRINGS_STRICT
+		If (n < 0) Then
+			#If CONFIG = "debug"
+				Error("Illegal function call.")
+			#End
+			
+			Return ""
+		Endif
+	#End
+	
+	Return Str[-Min(n, Len(Str))..]
 End
 
 Function Mid:String(Str:String, Pos:Int, Size:Int=-1)
-	If (Pos > Len(Str)) Then Return ""
+	If (Pos > Len(Str)) Then
+		Return ""
+	Endif
 	
 	Pos -= 1
 	
@@ -66,6 +89,7 @@ Function Mid:String(Str:String, Pos:Int, Size:Int=-1)
 	
 	If (Pos < 0) Then
 		Size += Pos
+		
 		Pos = 0
 	Endif
 	
@@ -97,7 +121,7 @@ Function LSet:String(Str:String, N:Int)
 End
 
 Function RSet:String(Str:String, N:Int)
-	Return Str[Len(Str)-N..]
+	Return Str[-N..]
 End
 
 Function Replace:String(Str:String, Sub:String, ReplaceWith:String)
@@ -117,7 +141,7 @@ Function Chr:String(In:Int)
 End
 
 Function Asc:Int(Str:String)	
-	Return Str.ToChars()[0]
+	Return Str[0]
 End
 
 Function Ascs:Int[](Str:String)
