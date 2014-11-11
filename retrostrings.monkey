@@ -49,6 +49,8 @@ Public
 
 ' Classic Blitz Basic string commands:
 Function Left:String(Str:String, n:Int)
+	If (n = 0) Then Return ""
+	
 	#If RETROSTRINGS_STRICT
 		If (n < 0) Then
 			#If CONFIG = "debug"
@@ -63,6 +65,8 @@ Function Left:String(Str:String, n:Int)
 End
 
 Function Right:String(Str:String, n:Int)
+	If (n = 0) Then Return ""
+	
 	#If RETROSTRINGS_STRICT
 		If (n < 0) Then
 			#If CONFIG = "debug"
@@ -77,6 +81,14 @@ Function Right:String(Str:String, n:Int)
 End
 
 Function Mid:String(Str:String, Pos:Int, Size:Int=-1)
+	If (Pos = 0) Then
+		#If CONFIG = "debug"
+			Error("Parameter must be greater than zero. ('Pos': " + Pos + ")")
+		#End
+		
+		Return ""
+	Endif
+	
 	If (Pos > Len(Str)) Then
 		Return ""
 	Endif
@@ -117,10 +129,26 @@ Function Upper:String(S:String)
 End
 
 Function LSet:String(Str:String, N:Int)
+	#If CONFIG = "debug"
+		If (N < 0) Then
+			Error("Parameter must be positive. ('N': " + N + ")")
+			
+			Return ""
+		Endif
+	#End
+	
 	Return Str[..N]
 End
 
 Function RSet:String(Str:String, N:Int)
+	#If CONFIG = "debug"
+		If (N < 0) Then
+			Error("Parameter must be positive. ('N': " + N + ")")
+			
+			Return ""
+		Endif
+	#End
+	
 	Return Str[-N..]
 End
 
