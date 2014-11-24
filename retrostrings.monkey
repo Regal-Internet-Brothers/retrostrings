@@ -74,7 +74,7 @@ Private
 	so we don't import the module when we're not supposed to be using it.
 #End
 
-#If (Not RETROSTRINGS_AUTHENTIC And Not RETROSTRINGS_STRICT) And Not RETROSTRINGS_STANDARD_INTERNALS
+#If Not RETROSTRINGS_STANDARD_INTERNALS
 	Import retrostringsextension
 #End
 
