@@ -17,8 +17,8 @@ Public
 	The idea behind this functionality is to only provide the
 	original standard BlitzBasic commands, and their usual behavior.
 	
-	This can be problematic for other modules which use the non-BlitzBasic
-	compatible features and behaviors within this module.
+	This can be problematic for other modules which use features and other
+	behaviors which are not compatible/available with BlitzBasic's original implementation.
 	
 	Configure this with caution, if you're unsure (Which you generally should be), don't mess with this.
 	
@@ -297,62 +297,69 @@ Function Bin:String(Value:Int)
 	Return String.FromChars(Buf)
 End
 
-#If Not RETROSTRINGS_AUTHENTIC
-	Function HexLE:String(Value:Int)
-		#If RETROSTRINGS_STANDARD_INTERNALS Or Not RETROSTRINGS_EXTENSION_HEXLE
-			' The current standard implementation of this may change in the future:
-			
-			' Local variable(s):
-			Local S:= HexBE(Value)
-			
-			' Return the result of 'HexBE' in corrected order. (Not the most efficient method)
-			Return S[6..8] + S[4..6] + S[2..4] + S[0..2]
-		#Else
-			Return ext.HexLE(Value)
-		#End
-	End
-	
-	' This command may be overhauled at a later date.
-	Function HexBE:String(Value:Int)
-		#If RETROSTRINGS_STANDARD_INTERNALS Or Not RETROSTRINGS_EXTENSION_HEXBE
-			' Local variable(s):
-			Local Buf:Int[8]
-			
-			For Local k:= 7 To 0 Step -1
-				Local n:Int = (Value & 15) + ASCII_NUMBERS_POSITION
-				
-				If (n > ASCII_CHARACTER_9) Then
-					n += (ASCII_CHARACTER_UPPERCASE_POSITION-ASCII_CHARACTER_9-1)
-				Endif
-				
-				Buf[k]=n
-				Value Shr= 4
-			Next
-			
-			Return String.FromChars(Buf)
-		#Else
-			Return ext.HexBE(Value)
-		#End
-	End
-	
-	' This will return an offset version of the number specified,
-	' based on the standard ascii position of zero.
-	' The 'Number' argument should be less than 'ASCII_NUMBER_COUNT', and no smaller than zero.
-	Function NumberInAsc:Int(Number:Int=0)
-		Return ASCII_NUMBERS_POSITION +
+' Functions (Private?) (These functions are not always private):
+#If RETROSTRINGS_AUTHENTIC
+	Private
+#End
+
+Function HexLE:String(Value:Int)
+	#If RETROSTRINGS_STANDARD_INTERNALS Or Not RETROSTRINGS_EXTENSION_HEXLE
+		' The current standard implementation of this may change in the future:
 		
-		#If RETROSTRINGS_SAFE
-			(Abs(Number) Mod ASCII_NUMBER_COUNT)
-		#Else
-			(Number Mod ASCII_NUMBER_COUNT)
-		#End
-	End
+		' Local variable(s):
+		Local S:= HexBE(Value)
+		
+		' Return the result of 'HexBE' in corrected order. (Not the most efficient method)
+		Return S[6..8] + S[4..6] + S[2..4] + S[0..2]
+	#Else
+		Return ext.HexLE(Value)
+	#End
+End
+
+' This command may be overhauled at a later date.
+Function HexBE:String(Value:Int)
+	#If RETROSTRINGS_STANDARD_INTERNALS Or Not RETROSTRINGS_EXTENSION_HEXBE
+		' Local variable(s):
+		Local Buf:Int[8]
+		
+		For Local k:= 7 To 0 Step -1
+			Local n:Int = (Value & 15) + ASCII_NUMBERS_POSITION
+			
+			If (n > ASCII_CHARACTER_9) Then
+				n += (ASCII_CHARACTER_UPPERCASE_POSITION-ASCII_CHARACTER_9-1)
+			Endif
+			
+			Buf[k]=n
+			Value Shr= 4
+		Next
+		
+		Return String.FromChars(Buf)
+	#Else
+		Return ext.HexBE(Value)
+	#End
+End
+
+' This will return an offset version of the number specified,
+' based on the standard ascii position of zero.
+' The 'Number' argument should be less than 'ASCII_NUMBER_COUNT', and no smaller than zero.
+Function NumberInAsc:Int(Number:Int=0)
+	Return ASCII_NUMBERS_POSITION +
 	
-	Function LongHex:String(Value:Int) 
-		Return Hex(Value)
-	End
-	
-	Function LongBin:String(Value:Int)
-		Return Bin(Value)
-	End
+	#If RETROSTRINGS_SAFE
+		(Abs(Number) Mod ASCII_NUMBER_COUNT)
+	#Else
+		(Number Mod ASCII_NUMBER_COUNT)
+	#End
+End
+
+Function LongHex:String(Value:Int) 
+	Return Hex(Value)
+End
+
+Function LongBin:String(Value:Int)
+	Return Bin(Value)
+End
+
+#If RETROSTRINGS_AUTHENTIC
+	Public
 #End
