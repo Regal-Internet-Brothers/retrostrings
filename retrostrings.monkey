@@ -2,8 +2,6 @@ Strict
 
 Public
 
-' Retro Strings Module V1.0.4 - By: Anthony Diamond (Sonickidnextgen)
-
 ' ///---------------------------------------------------------------------------------------------------------------------\\\
 '	  This library was created because I was annoyed by the lack of convenience when working with strings in Monkey.
 '	  Plus, this is useful when porting programs from Blitz Basic and Blitz Max.
@@ -12,48 +10,141 @@ Public
 '	  If you have any feature suggestions, please post about them on the Monkey forums.
 ' ///---------------------------------------------------------------------------------------------------------------------\\\
 
-' DISCLAIMER:
-'
-' Copyright (c) 2014 - Anthony Diamond
-'
-' Permission is hereby granted, free of charge, To any person obtaining a copy of this software And associated documentation files (the "Software"), To deal in the Software without restriction, including without limitation the rights To use, copy, modify, merge, publish, distribute, sublicense, And/Or sell copies of the Software, And To permit persons To whom the Software is furnished To do so, subject To the following conditions:
-' The above copyright notice And this permission notice shall be included in all copies Or substantial portions of the Software.
-' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS Or IMPLIED, INCLUDING BUT Not LIMITED To THE WARRANTIES OF MERCHANTABILITY, FITNESS For A PARTICULAR PURPOSE And NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS Or COPYRIGHT HOLDERS BE LIABLE For ANY CLAIM, DAMAGES Or OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT Or OTHERWISE, ARISING FROM, OUT OF Or IN CONNECTION WITH THE SOFTWARE Or THE USE Or OTHER DEALINGS IN THE SOFTWARE.
-
-' //////// ------------------------------------------------------------------------------------------------------------------------------------- \\\\\\\\
-
 ' Preprocessor related:
-#RETROSTRINGS_STANDARD_INTERNALS = True
+
+#Rem
+	This standard has not yet been properly implemented.
+	The idea behind this functionality is to only provide the
+	original standard BlitzBasic commands, and their usual behavior.
+	
+	This can be problematic for other modules which use the features within
+	this module which aren't completely BB-compatible or expected in BlitzBasic.
+	
+	Configure this with caution, if you're unsure (Which you generally should be), don't mess with this.
+#End
+
+#RETROSTRINGS_AUTHENTIC = False
+
+#Rem
+	Enabling this will cause extra checks to take place to ensure
+	there isn't any issue with the input supplied to the commands of this module.
+	Under normal situations, "strict-mode" is enabled,
+	so 'RETROSTRINGS_AUTHENTIC' does not need to be check for this.
+#End
+
 #RETROSTRINGS_STRICT = True
 
+#Rem
+	This currently has variable results, and could change.
+	The idea behind this variable is to provide
+	better configuration for what 'RETROSTRINGS_STRICT' applied.
+	
+	This functionality has yet to be properly implemented.
+	Very few places (If any) actually use this.
+#End
+
+#RETROSTRINGS_SAFE = True
+
+#If CONFIG = "debug" Or RETROSTRINGS_AUTHENTIC Or RETROSTRINGS_SAFE
+	#Rem
+		This is currently only defined when compiling in debug-mode.
+		If this is disabled, errors detected within the module will be ignored silently,
+		and possibly not even checked altogether (Unlikely; see 'RETROSTRINGS_STRICT').
+	#End
+	
+	#RETROSTRINGS_REPORT_ERRORS = True
+#End
+
 ' Imports (Public):
-Import stringutil
+#If Not RETROSTRINGS_AUTHENTIC
+	Import stringutil
+#End
 
 ' Imports (Private):
 Private
 
 ' Non-standard imports (Proprietary):
-#If Not RETROSTRINGS_STANDARD_INTERNALS
+
+#Rem
+	For the sake of backward compatibility, make sure the
+	user isn't trying to force standard internals.
+	Technically, this check isn't needed, it's just here
+	so we don't import the module when we're not supposed to be using it.
+#End
+
+#If (Not RETROSTRINGS_AUTHENTIC And Not RETROSTRINGS_STRICT) And Not RETROSTRINGS_STANDARD_INTERNALS
 	Import retrostringsextension
 #End
 
 Public
 
-' Aliases:
+#Rem
+	The following routine is done for the sake of automating non-standard extensions to this module:
+	This routine will be attempted if a preprocessor variable was already defined or not.
+	No problems will occur if variables were manually defined beforehand.
+#End
 
 #If Not RETROSTRINGS_STANDARD_INTERNALS
+	' Check if we were able to import the extension-module:
+	#If Not RETROSTRINGS_EXTENSION_IMPLEMENTED
+		' No module was found, use standard internals.
+		#RETROSTRINGS_STANDARD_INTERNALS = True
+	#Else
+		' We found an extension-module, do not define the "standard-internals" variable.
+	#End
+#End
+
+' Aliases:
+
+' Check for standard internals:
+#If Not RETROSTRINGS_STANDARD_INTERNALS
+	' This will act as a module-independent alias for extensions.
 	Alias ext = retrostringsextension
 #End
 
+' Constant variable(s) (Public):
+
+#If Not RETROSTRINGS_AUTHENTIC
+	' These are mainly used for internal routines, such as hexadecimal conversion:
+	Const ASCII_CHARACTER_0:= 48
+	Const ASCII_CHARACTER_1:= ASCII_CHARACTER_0 + 1
+	Const ASCII_CHARACTER_2:= ASCII_CHARACTER_1 + 1
+	Const ASCII_CHARACTER_3:= ASCII_CHARACTER_2 + 1
+	Const ASCII_CHARACTER_4:= ASCII_CHARACTER_3 + 1
+	Const ASCII_CHARACTER_5:= ASCII_CHARACTER_4 + 1
+	Const ASCII_CHARACTER_6:= ASCII_CHARACTER_5 + 1
+	Const ASCII_CHARACTER_7:= ASCII_CHARACTER_6 + 1
+	Const ASCII_CHARACTER_8:= ASCII_CHARACTER_7 + 1
+	Const ASCII_CHARACTER_9:= ASCII_CHARACTER_8 + 1
+	
+	Const ASCII_CHARACTER_UPPERCASE_POSITION:= 65
+	Const ASCII_CHARACTER_LOWERCASE_POSITION:= 97
+	
+	' The alphabet is currently not available / available publicly.
+#End
+
+' Constant variable(s) (Private):
+Private
+
+#If Not RETROSTRINGS_AUTHENTIC
+	' This represents the number of characters
+	' representing numbers in the ascii-table.
+	Const ASCII_NUMBER_COUNT:Int = 10
+#End
+
+Public
+
 ' Functions:
 
-' Classic Blitz Basic string commands:
+' Classic BlitzBasic-styled string-commands:
 Function Left:String(Str:String, n:Int)
-	If (n = 0) Then Return ""
+	#If RETROSTRINGS_SAFE
+		If (n = 0) Then Return ""
+	#End
 	
-	#If RETROSTRINGS_STRICT
+	#If RETROSTRINGS_STRICT Or RETROSTRINGS_SAFE
 		If (n < 0) Then
-			#If CONFIG = "debug"
+			#If RETROSTRINGS_REPORT_ERRORS
 				Error("Illegal function call.")
 			#End
 			
@@ -67,9 +158,9 @@ End
 Function Right:String(Str:String, n:Int)
 	If (n = 0) Then Return ""
 	
-	#If RETROSTRINGS_STRICT
+	#If RETROSTRINGS_STRICT Or RETROSTRINGS_SAFE
 		If (n < 0) Then
-			#If CONFIG = "debug"
+			#If RETROSTRINGS_REPORT_ERRORS
 				Error("Illegal function call.")
 			#End
 			
@@ -81,13 +172,16 @@ Function Right:String(Str:String, n:Int)
 End
 
 Function Mid:String(Str:String, Pos:Int, Size:Int=-1)
-	If (Pos = 0) Then
-		#If CONFIG = "debug"
-			Error("Parameter must be greater than zero. ('Pos': " + Pos + ")")
-		#End
-		
-		Return ""
-	Endif
+	#If RETROSTRINGS_STRICT Or RETROSTRINGS_SAFE
+		If (Pos = 0) Then
+			#If RETROSTRINGS_REPORT_ERRORS
+				'Error("Parameter must be greater than zero. ('Pos': " + Pos + ")")
+				Error("Parameter must be greater than zero. ('Pos': 0")
+			#End
+			
+			Return ""
+		Endif
+	#End
 	
 	If (Pos > Len(Str)) Then
 		Return ""
@@ -129,9 +223,11 @@ Function Upper:String(S:String)
 End
 
 Function LSet:String(Str:String, N:Int)
-	#If CONFIG = "debug"
+	#If RETROSTRINGS_SAFE Or RETROSTRINGS_REPORT_ERRORS
 		If (N < 0) Then
-			Error("Parameter must be positive. ('N': " + N + ")")
+			#If RETROSTRINGS_REPORT_ERRORS
+				Error("Parameter must be positive. ('N': " + N + ")")
+			#End
 			
 			Return ""
 		Endif
@@ -141,9 +237,11 @@ Function LSet:String(Str:String, N:Int)
 End
 
 Function RSet:String(Str:String, N:Int)
-	#If CONFIG = "debug"
+	#If RETROSTRINGS_SAFE Or RETROSTRINGS_REPORT_ERRORS
 		If (N < 0) Then
-			Error("Parameter must be positive. ('N': " + N + ")")
+			#If RETROSTRINGS_REPORT_ERRORS
+				Error("Parameter must be positive. ('N': " + N + ")")
+			#End
 			
 			Return ""
 		Endif
@@ -176,43 +274,10 @@ Function Ascs:Int[](Str:String)
 	Return Str.ToChars()
 End
 
+' The output of this command is completely defined by the implementation of 'retrostrings'.
+' This could use either 'HexBE', or 'HexLE'. Usually, the version used is the fastest.
 Function Hex:String(Value:Int)
 	Return HexBE(Value)
-End
-
-Function HexLE:String(Value:Int)
-	#If RETROSTRINGS_STANDARD_INTERNALS
-		' The current standard implementation of this may change in the future:
-		
-		' Local variable(s):
-		Local S:= HexBE(Value)
-		
-		' Return the result of 'HexBE' in corrected order.
-		Return S[6..8] + S[4..6] + S[2..4] + S[0..2]
-	#Else
-		Return ext.HexLE(Value)
-	#End
-End
-
-' This command may be overhauled at a later date.
-Function HexBE:String(Value:Int)
-	#If RETROSTRINGS_STANDARD_INTERNALS
-		' Local variable(s):
-		Local Buf:Int[8]
-		
-		For Local k:Int = 7 To 0 Step -1
-			Local n:Int = (Value & 15) + Asc("0")
-			
-			If (n > Asc("9")) Then n += (Asc("A")-Asc("9")-1)
-			
-			Buf[k]=n
-			Value Shr= 4
-		Next
-		
-		Return String.FromChars(Buf)
-	#Else
-		Return ext.HexBE(Value)
-	#End
 End
 
 Function Bin:String(Value:Int)
@@ -220,7 +285,7 @@ Function Bin:String(Value:Int)
 	Local Buf:Int[32]
 	
 	For Local k:Int = 31 To 0 Step -1
-		Buf[k] = (Value&1) + Asc("0")
+		Buf[k] = (Value&1) + ASCII_CHARACTER_0
 		
 		Value Shr= 1
 	Next
@@ -228,10 +293,62 @@ Function Bin:String(Value:Int)
 	Return String.FromChars(Buf)
 End
 
-Function LongHex:String(Value:Int) 
-	Return Hex(Value)
-End
-
-Function LongBin:String(Value:Int)
-	Return Bin(Value)
-End
+#If Not RETROSTRINGS_AUTHENTIC
+	Function HexLE:String(Value:Int)
+		#If RETROSTRINGS_STANDARD_INTERNALS Or Not RETROSTRINGS_EXTENSION_HEXLE
+			' The current standard implementation of this may change in the future:
+			
+			' Local variable(s):
+			Local S:= HexBE(Value)
+			
+			' Return the result of 'HexBE' in corrected order. (Not the most efficient method)
+			Return S[6..8] + S[4..6] + S[2..4] + S[0..2]
+		#Else
+			Return ext.HexLE(Value)
+		#End
+	End
+	
+	' This command may be overhauled at a later date.
+	Function HexBE:String(Value:Int)
+		#If RETROSTRINGS_STANDARD_INTERNALS Or Not RETROSTRINGS_EXTENSION_HEXBE
+			' Local variable(s):
+			Local Buf:Int[8]
+			
+			For Local k:= 7 To 0 Step -1
+				Local n:Int = (Value & 15) + ASCII_CHARACTER_0
+				
+				If (n > ASCII_CHARACTER_9) Then
+					n += (ASCII_CHARACTER_UPPERCASE_POSITION-ASCII_CHARACTER_9-1)
+				Endif
+				
+				Buf[k]=n
+				Value Shr= 4
+			Next
+			
+			Return String.FromChars(Buf)
+		#Else
+			Return ext.HexBE(Value)
+		#End
+	End
+	
+	' This will return an offset version of the number specified,
+	' based on the standard ascii position of zero.
+	' The 'Number' argument should be less than 'ASCII_NUMBER_COUNT', and no smaller than zero.
+	Function NumberInAsc:Int(Number:Int=0)
+		Return ASCII_CHARACTER_0 +
+		
+		#If RETROSTRINGS_SAFE
+			(Abs(Number) Mod ASCII_NUMBER_COUNT)
+		#Else
+			(Number Mod ASCII_NUMBER_COUNT)
+		#End
+	End
+	
+	Function LongHex:String(Value:Int) 
+		Return Hex(Value)
+	End
+	
+	Function LongBin:String(Value:Int)
+		Return Bin(Value)
+	End
+#End
