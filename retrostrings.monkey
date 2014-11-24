@@ -96,13 +96,19 @@ Public
 	#End
 #End
 
-' Aliases:
+' Aliases (Public):
+' Nothing so far.
+
+' Aliases (Private):
+Private
 
 ' Check for standard internals:
 #If Not RETROSTRINGS_STANDARD_INTERNALS
 	' This will act as a module-independent alias for extensions.
 	Alias ext = retrostringsextension
 #End
+
+Public
 
 ' Constant variable(s) (Public):
 
@@ -312,7 +318,7 @@ Function HexLE:String(Value:Int)
 		' Return the result of 'HexBE' in corrected order. (Not the most efficient method)
 		Return S[6..8] + S[4..6] + S[2..4] + S[0..2]
 	#Else
-		Return ext.HexLE(Value)
+		Return rsext.HexLE(Value)
 	#End
 End
 
@@ -335,7 +341,7 @@ Function HexBE:String(Value:Int)
 		
 		Return String.FromChars(Buf)
 	#Else
-		Return ext.HexBE(Value)
+		Return rsext.HexBE(Value)
 	#End
 End
 
