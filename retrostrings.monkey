@@ -17,10 +17,12 @@ Public
 	The idea behind this functionality is to only provide the
 	original standard BlitzBasic commands, and their usual behavior.
 	
-	This can be problematic for other modules which use the features within
-	this module which aren't completely BB-compatible or expected in BlitzBasic.
+	This can be problematic for other modules which use the non-BlitzBasic
+	compatible features and behaviors within this module.
 	
 	Configure this with caution, if you're unsure (Which you generally should be), don't mess with this.
+	
+	If this is disabled, it means full functionality is available; don't worry about this variable.
 #End
 
 #RETROSTRINGS_AUTHENTIC = False
@@ -106,7 +108,9 @@ Public
 
 #If Not RETROSTRINGS_AUTHENTIC
 	' These are mainly used for internal routines, such as hexadecimal conversion:
-	Const ASCII_CHARACTER_0:= 48
+	Const ASCII_NUMBERS_POSITION:Int = 48
+	
+	Const ASCII_CHARACTER_0:= ASCII_NUMBERS_POSITION
 	Const ASCII_CHARACTER_1:= ASCII_CHARACTER_0 + 1
 	Const ASCII_CHARACTER_2:= ASCII_CHARACTER_1 + 1
 	Const ASCII_CHARACTER_3:= ASCII_CHARACTER_2 + 1
@@ -285,7 +289,7 @@ Function Bin:String(Value:Int)
 	Local Buf:Int[32]
 	
 	For Local k:Int = 31 To 0 Step -1
-		Buf[k] = (Value&1) + ASCII_CHARACTER_0
+		Buf[k] = (Value&1) + ASCII_NUMBERS_POSITION
 		
 		Value Shr= 1
 	Next
@@ -315,7 +319,7 @@ End
 			Local Buf:Int[8]
 			
 			For Local k:= 7 To 0 Step -1
-				Local n:Int = (Value & 15) + ASCII_CHARACTER_0
+				Local n:Int = (Value & 15) + ASCII_NUMBERS_POSITION
 				
 				If (n > ASCII_CHARACTER_9) Then
 					n += (ASCII_CHARACTER_UPPERCASE_POSITION-ASCII_CHARACTER_9-1)
@@ -335,7 +339,7 @@ End
 	' based on the standard ascii position of zero.
 	' The 'Number' argument should be less than 'ASCII_NUMBER_COUNT', and no smaller than zero.
 	Function NumberInAsc:Int(Number:Int=0)
-		Return ASCII_CHARACTER_0 +
+		Return ASCII_NUMBERS_POSITION +
 		
 		#If RETROSTRINGS_SAFE
 			(Abs(Number) Mod ASCII_NUMBER_COUNT)
