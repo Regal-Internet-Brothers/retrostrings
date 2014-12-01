@@ -2,15 +2,18 @@ Strict
 
 Public
 
-' ///---------------------------------------------------------------------------------------------------------------------\\\
-'	  This library was created because I was annoyed by the lack of convenience when working with strings in Monkey.
-'	  Plus, this is useful when porting programs from Blitz Basic and Blitz Max.
-'
-'	  If you find any bugs while using this library, please report them.
-'	  If you have any feature suggestions, please post about them on the Monkey forums.
-' ///---------------------------------------------------------------------------------------------------------------------\\\
+#Rem
+	This library was created for the sake of restoring the original string-manipulation commands from BlitzBasic.
+	This module is useful for porting programs from BlitzBasic and BlitzMax.
+	
+	If you find any bugs while using this module, please report them.
+#End
 
 ' Preprocessor related:
+
+' This acts as the standard implementation-flag for this module.
+' If this isn't defined, this module was not imported.
+#RETROSTRINGS_IMPLEMENTED = True
 
 #Rem
 	This standard has not yet been properly implemented.
