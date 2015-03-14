@@ -68,6 +68,10 @@ Public
 ' Imports (Private):
 Private
 
+#If RETROSTRINGS_AUTHENTIC
+	Import stringutil
+#End
+
 ' Non-standard imports (Proprietary):
 
 #Rem
@@ -109,40 +113,6 @@ Private
 #If Not RETROSTRINGS_STANDARD_INTERNALS
 	' This will act as a module-independent alias for extensions.
 	Alias ext = retrostringsextension
-#End
-
-Public
-
-' Constant variable(s) (Public):
-
-#If Not RETROSTRINGS_AUTHENTIC
-	' These are mainly used for internal routines, such as hexadecimal conversion:
-	Const ASCII_NUMBERS_POSITION:Int = 48
-	
-	Const ASCII_CHARACTER_0:= ASCII_NUMBERS_POSITION
-	Const ASCII_CHARACTER_1:= ASCII_CHARACTER_0 + 1
-	Const ASCII_CHARACTER_2:= ASCII_CHARACTER_1 + 1
-	Const ASCII_CHARACTER_3:= ASCII_CHARACTER_2 + 1
-	Const ASCII_CHARACTER_4:= ASCII_CHARACTER_3 + 1
-	Const ASCII_CHARACTER_5:= ASCII_CHARACTER_4 + 1
-	Const ASCII_CHARACTER_6:= ASCII_CHARACTER_5 + 1
-	Const ASCII_CHARACTER_7:= ASCII_CHARACTER_6 + 1
-	Const ASCII_CHARACTER_8:= ASCII_CHARACTER_7 + 1
-	Const ASCII_CHARACTER_9:= ASCII_CHARACTER_8 + 1
-	
-	Const ASCII_CHARACTER_UPPERCASE_POSITION:= 65
-	Const ASCII_CHARACTER_LOWERCASE_POSITION:= 97
-	
-	' The alphabet is currently not available / available publicly.
-#End
-
-' Constant variable(s) (Private):
-Private
-
-#If Not RETROSTRINGS_AUTHENTIC
-	' This represents the number of characters
-	' representing numbers in the ascii-table.
-	Const ASCII_NUMBER_COUNT:Int = 10
 #End
 
 Public
@@ -294,16 +264,20 @@ Function Hex:String(Value:Int)
 End
 
 Function Bin:String(Value:Int)
-	' Local variable(s):
-	Local Buf:Int[32]
-	
-	For Local k:Int = 31 To 0 Step -1
-		Buf[k] = (Value&1) + ASCII_NUMBERS_POSITION
+	#If RETROSTRINGS_AUTHENTIC
+		' Local variable(s):
+		Local Buf:Int[32]
 		
-		Value Shr= 1
-	Next
-	
-	Return String.FromChars(Buf)
+		For Local k:= 31 To 0 Step -1
+			Buf[k] = (Value & 1) + ASCII_NUMBERS_POSITION
+			
+			Value Shr= 1
+		Next
+		
+		Return String.FromChars(Buf)
+	#Else
+		Return BitFieldAsString(Value)
+	#End
 End
 
 ' Functions (Private?) (These functions are not always private):
