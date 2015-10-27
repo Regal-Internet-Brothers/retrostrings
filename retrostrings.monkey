@@ -62,14 +62,14 @@ Public
 
 ' Imports (Public):
 #If Not RETROSTRINGS_AUTHENTIC
-	Import stringutil
+	Import regal.stringutil
 #End
 
 ' Imports (Private):
 Private
 
 #If RETROSTRINGS_AUTHENTIC
-	Import stringutil
+	Import regal.stringutil
 #End
 
 ' Non-standard imports (Proprietary):
